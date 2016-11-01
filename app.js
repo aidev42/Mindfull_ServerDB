@@ -29,40 +29,41 @@ app.set( 'view engine', 'jade');
 //User model and database
 var Activity = require('./model/activity');
 
-// app.options('/retrieve', cors());
-// app.post('/retrieve', function (req, res, done) {
-//   var dataReturn = {}
-//   console.log('user email is: ', req.body.email)
-//   console.log('password is:', req.body.password)
+app.options('/history', cors());
+app.post('/history', function (req, res, done) {
+  console.log('hit the history post')
+  var dataReturn = {}
+  var endTime = undefined
+  //first find the latest activity to have ended
+  //THIS SORT WITH FINDONE MAY NOT WORK
+  Activity.findOne({
+      'userID': req.body.userID,
+    })
+  .sort({'ended': 'desc'})
+  .exec(function(err, activity){
+    console.log('activity found: ', activity)
+    if(err){ return done(err); }
+    if (!activity){
+      endTime = new Date()
+    } else{
+      endTime = activity.ended - (1000 * 60 * 60 * 24 * 7)
+    }
+    console.log('endTime is: ', endTime)
+  })
 
-
-//   User.findOne({
-//       'email': req.body.email
-//     },
-//     function(err, user){
-//       if(err || req.body.password == undefined){ return done(err); }
-
-//       if(!user){
-//         console.log('no user found')
-//         return done(err)
-//       }
-//       console.log('user is: ', user)
-//       //check password
-//       var hash = user.generateHash(req.body.password)
-//       console.log(hash)
-//       if (!(user.validPassword(req.body.password))) {
-//         console.log('bad password')
-//         return done(err);
-//       } else {
-//         dataReturn = {
-//           'Favorites': user.favorites,
-//           'Decisions': user.decisions
-//         }
-//       }
-//     console.log('data to be sent: ', dataReturn)
-//     res.send(dataReturn);
-//   });
-// });
+  //Now find all activies started before the cutoff
+  Activity.find({
+      'userID': req.body.userID,
+      'started': {$gt: endTime}
+    })
+  .sort({'ended': 'desc'})
+  .exec(function(err, activities){
+    if(err){ return done(err); }
+    dataReturn = activities
+    console.log('data to be sent: ', dataReturn)
+    res.send(dataReturn);
+  });
+});
 
 app.options('/', cors());
 app.post('/', function (req, res, done) {
