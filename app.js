@@ -46,23 +46,26 @@ app.post('/history', function (req, res, done) {
     if (!activity){
       endTime = new Date()
     } else{
-      endTime = activity.ended - (1000 * 60 * 60 * 24 * 7)
+      endTime = activity.ended
+      endTime.setDate(endTime.getDate()-7)
     }
     console.log('endTime is: ', endTime)
-  })
+  // })
 
   //Now find all activies started before the cutoff
   Activity.find({
-      'userID': req.body.userID,
-      'started': {$gt: endTime}
+      //'userID': req.body.userID
+      'started': {$gte : endTime}
     })
   .sort({'ended': 'desc'})
   .exec(function(err, activities){
+    console.log('endTime is: ', endTime)
     if(err){ return done(err); }
     dataReturn = activities
     console.log('data to be sent: ', dataReturn)
     res.send(dataReturn);
   });
+    })
 });
 
 app.options('/', cors());
