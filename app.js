@@ -32,7 +32,7 @@ var Activity = require('./model/activity');
 app.options('/history', cors());
 app.post('/history', function (req, res, done) {
   console.log('hit the history post')
-  var dataReturn = {}
+  var dataReturn = []
   var endTime = undefined
   //first find the latest activity to have ended
   //THIS SORT WITH FINDONE MAY NOT WORK
@@ -52,23 +52,94 @@ app.post('/history', function (req, res, done) {
       }
       console.log('endTime is: ', endTime)
     // })
-    }
+      }
 
-  //Now find all activies started before the cutoff
-  Activity.find({
-      'userID': req.body.userID,
-      'ended': {$gte : endTime}
+    //Now find all activities started before the cutoff. There are two version of this though, one for analysis page where we need to aggreate by sphere type and one for edit page where we do not
+
+    console.log('this is analyze value: ', req.body.analyze)
+      if (req.body.analyze){
+        //aggregate data and return an array of [Worktotaltime,socialtotaltime,selftotoaltime,resttotaltime]
+        //remember duration is in minutes and we want to compare on hours basis
+        console.log('got into analyze section')
+        Activity.find({
+          'userID': req.body.userID,
+          'ended': {$gte : endTime},
+          'type': 'Work'
+          })
+        .sort({'ended': 'desc'})
+        .exec(function(err, activities){
+          if(err){ return done(err); }
+          var sum = 0
+          for (i=0; i < activities.length; i++){
+            sum += activities[i].duration
+          }
+          dataReturn.push(Math.round(sum/60))
+        })
+
+        Activity.find({
+          'userID': req.body.userID,
+          'ended': {$gte : endTime},
+          'type': 'Social'
+          })
+        .sort({'ended': 'desc'})
+        .exec(function(err, activities){
+          if(err){ return done(err); }
+          var sum = 0
+          for (i=0; i < activities.length; i++){
+            sum += activities[i].duration
+          }
+          dataReturn.push(Math.round(sum/60))
+        })
+
+        Activity.find({
+          'userID': req.body.userID,
+          'ended': {$gte : endTime},
+          'type': 'Self'
+          })
+        .sort({'ended': 'desc'})
+        .exec(function(err, activities){
+          if(err){ return done(err); }
+          var sum = 0
+          for (i=0; i < activities.length; i++){
+            sum += activities[i].duration
+          }
+          dataReturn.push(Math.round(sum/60))
+        })
+
+        Activity.find({
+          'userID': req.body.userID,
+          'ended': {$gte : endTime},
+          'type': 'Rest'
+          })
+        .sort({'ended': 'desc'})
+        .exec(function(err, activities){
+          if(err){ return done(err); }
+          var sum = 0
+          for (i=0; i < activities.length; i++){
+            sum += activities[i].duration
+          }
+          dataReturn.push(Math.round(sum/60))
+        })
+
+        res.send(dataReturn);
+
+      } else{
+        Activity.find({
+            'userID': req.body.userID,
+            'ended': {$gte : endTime}
+          })
+        .sort({'ended': 'desc'})
+        .exec(function(err, activities){
+          console.log('endTime is: ', endTime)
+          if(err){ return done(err); }
+          dataReturn = activities
+          console.log('data to be sent: ', dataReturn)
+          res.send(dataReturn);
+        });
+      }
+
     })
-  .sort({'ended': 'desc'})
-  .exec(function(err, activities){
-    console.log('endTime is: ', endTime)
-    if(err){ return done(err); }
-    dataReturn = activities
-    console.log('data to be sent: ', dataReturn)
-    res.send(dataReturn);
   });
-    })
-});
 
 app.options('/', cors());
 app.post('/', function (req, res, done) {
