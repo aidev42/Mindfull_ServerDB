@@ -119,6 +119,8 @@ app.post('/', function (req, res, done) {
 app.options('/history', cors());
 app.delete('/history', function (req, res, done) {
   console.log('hit the delete')
+  console.log('this is the req: ', req)
+  console.log('this is the req.body: ', req.body)
   console.log('this is the id recieved: ', req.body._id)
   Activity.find({
       '_id': req.body._id
