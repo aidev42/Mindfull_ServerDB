@@ -55,7 +55,7 @@ app.post('/history', function (req, res, done) {
   //Now find all activies started before the cutoff
   Activity.find({
       //'userID': req.body.userID
-      'started': {$gte : endTime}
+      'ended': {$gte : endTime}
     })
   .sort({'ended': 'desc'})
   .exec(function(err, activities){
@@ -113,6 +113,18 @@ app.post('/', function (req, res, done) {
           return done(err, activity);
         });
   });
+  res.send('done')
+});
+
+app.options('/history', cors());
+app.delete('/history', function (req, res, done) {
+  console.log('hit the delete')
+  Activity.remove({
+      '_id': req.body._id
+    })
+  .exec(function(err, activity){
+
+  if(err){ return done(err); }
   res.send('done')
 });
 
