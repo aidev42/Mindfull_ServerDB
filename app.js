@@ -126,7 +126,7 @@ app.delete('/history', function (req, res, done) {
   .exec(function(err, activity){
 
   if(err){ return done(err); }
-  res.send(activity, 'done removing')
+  res.send('done removing')
   })
 });
 
