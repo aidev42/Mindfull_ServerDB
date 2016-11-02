@@ -116,8 +116,9 @@ app.post('/', function (req, res, done) {
   res.send('done')
 });
 
+//Per documentation angular $http does not allow a DELETE request to send a body, so while a DELETE request is semantically correct and works via postman, must use PUT here as 2nd best option
 app.options('/history', cors());
-app.delete('/history', function (req, res, done) {
+app.put('/history', function (req, res, done) {
   console.log('hit the delete')
   console.log('this is the req: ', req)
   console.log('this is the req.body: ', req.body)
