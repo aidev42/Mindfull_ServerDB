@@ -71,6 +71,37 @@ app.post('/history', function (req, res, done) {
 app.options('/', cors());
 app.post('/', function (req, res, done) {
   console.log('hit the post')
+  var activity = undefined
+
+
+  //In case old working was not clicked off, first update old working
+
+  // if selected tpye not equal to workingtype, try to find working type, if can find it AND doesn't already have an end time add an end time
+  if (req.body.type != req.body.workingType){
+    Activity.find({
+      'userID': req.body.userID,
+      'type': req.body.workingType
+    })
+  .sort({'started': 'desc'})
+  .exec(function(err, activities){
+    if(err){ return done(err); }
+    if (activities.length > 0 && activities[0].ended == undefined){
+        activity = activities[0]
+        activity.ended = req.body.time
+        //Number of minutes elapsed
+        activity.duration = Math.round((activity.ended - activity.started) / (1000 * 60))
+        activity.hours = Math.floor(activity.duration / 60)
+        activity.minutes = activity.duration % 60
+      //save changes made to activity
+      activity.save(function(err){
+          if(err) console.log('error saving activity' + err);
+          return done(err, activity);
+        });
+      }
+    })
+  }
+
+  //Now update newly clicked
   Activity.find({
       'userID': req.body.userID,
       'type': req.body.type
@@ -80,8 +111,9 @@ app.post('/', function (req, res, done) {
 
   if(err){ return done(err); }
   console.log('now at activities: ', activities)
-    var activity = undefined
-    // if no activity found, create new
+
+
+    // if no activity of type found, create new
       if (activities.length == 0){
         console.log('no activity found')
         activity = new Activity({
@@ -90,7 +122,7 @@ app.post('/', function (req, res, done) {
           'started': req.body.time
         });
       }
-      // if activity found and has already ended, create a new activity
+      // if activity of type found and has already ended, create a new activity
       else if(activities[0].ended != undefined){
         activity = new Activity({
           'userID': req.body.userID,
@@ -98,7 +130,7 @@ app.post('/', function (req, res, done) {
           'started': req.body.time
         });
       }
-      // if activity found and has not ended, add end time and duration
+      // if activity of type found and has not ended, add end time and duration
       else if (activities[0].ended == undefined){
         activity = activities[0]
         activity.ended = req.body.time
