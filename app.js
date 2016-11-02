@@ -104,6 +104,8 @@ app.post('/', function (req, res, done) {
         activity.ended = req.body.time
         //Number of minutes elapsed
         activity.duration = Math.round((activity.ended - activity.started) / (1000 * 60))
+        activity.hours = Math.floor(activity.duration / 60)
+        activity.minutes = activity.duration % 60
       }
       //save changes made to activity
       activity.save(function(err){
