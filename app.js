@@ -34,6 +34,7 @@ app.post('/history', function (req, res, done) {
   console.log('hit the history post')
   var dataReturn = []
   var endTime = undefined
+  var totalSum = 0
   //first find the latest activity to have ended
   //THIS SORT WITH FINDONE MAY NOT WORK
   Activity.findOne({
@@ -74,7 +75,8 @@ app.post('/history', function (req, res, done) {
           for (i=0; i < activities.length; i++){
             sum += activities[i].duration
           }
-          dataReturn.push(Math.round(sum/60))
+          dataReturn.push(sum)
+          totalSum += sum
           console.log('after work, this is datareturn', dataReturn)
         })
 
@@ -90,7 +92,8 @@ app.post('/history', function (req, res, done) {
           for (i=0; i < activities.length; i++){
             sum += activities[i].duration
           }
-          dataReturn.push(Math.round(sum/60))
+          dataReturn.push(sum)
+          totalSum += sum
           console.log('after social, this is datareturn', dataReturn)
         })
 
@@ -106,7 +109,8 @@ app.post('/history', function (req, res, done) {
           for (i=0; i < activities.length; i++){
             sum += activities[i].duration
           }
-          dataReturn.push(Math.round(sum/60))
+          dataReturn.push(sum)
+          totalSum += sum
           console.log('after self, this is datareturn', dataReturn)
         })
 
@@ -122,8 +126,13 @@ app.post('/history', function (req, res, done) {
           for (i=0; i < activities.length; i++){
             sum += activities[i].duration
           }
-          dataReturn.push(Math.round(sum/60))
+          dataReturn.push(sum)
           console.log('after rest, this is datareturn', dataReturn)
+          totalSum += sum
+          for (i=0; i<dataReturn.length; i++){
+            dataReturn[i] = Math.round((dataReturn[i]/totalSum)*168)
+          }
+          console.log('total sum is :', totalSum)
           res.send(dataReturn);
         })
 
@@ -138,6 +147,7 @@ app.post('/history', function (req, res, done) {
           if(err){ return done(err); }
           dataReturn = activities
           console.log('data to be sent: ', dataReturn)
+
           res.send(dataReturn);
         });
       }
