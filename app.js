@@ -54,7 +54,7 @@ app.post('/history', function (req, res, done) {
 
   //Now find all activies started before the cutoff
   Activity.find({
-      //'userID': req.body.userID
+      'userID': req.body.userID,
       'ended': {$gte : endTime}
     })
   .sort({'ended': 'desc'})
@@ -119,10 +119,6 @@ app.post('/', function (req, res, done) {
 //Per documentation angular $http does not allow a DELETE request to send a body, so while a DELETE request is semantically correct and works via postman, must use PUT here as 2nd best option
 app.options('/history', cors());
 app.put('/history', function (req, res, done) {
-  console.log('hit the delete')
-  console.log('this is the req: ', req)
-  console.log('this is the req.body: ', req.body)
-  console.log('this is the id recieved: ', req.body._id)
   Activity.find({
       '_id': req.body._id
     })
