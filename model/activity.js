@@ -6,8 +6,8 @@ var activitySchema = mongoose.Schema({
   type: String,
   started: Date,
   ended: Date,
-  duration: Number
-  hours: Number
+  duration: Number,
+  hours: Number,
   minutes: Number
 });
 
