@@ -6,7 +6,7 @@ var activitySchema = mongoose.Schema({
   type: String,
   started: Date,
   ended: Date,
-  length: Number
+  duration: Number
 });
 
 // methods ======================

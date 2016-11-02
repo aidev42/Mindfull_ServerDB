@@ -98,12 +98,12 @@ app.post('/', function (req, res, done) {
           'started': req.body.time
         });
       }
-      // if activity found and has not ended, add end time and length
+      // if activity found and has not ended, add end time and duration
       else if (activities[0].ended == undefined){
         activity = activities[0]
         activity.ended = req.body.time
         //Number of minutes elapsed
-        activity.length = (activity.ended - activity.started) / (1000 * 60)
+        activity.duration = Math.round((activity.ended - activity.started) / (1000 * 60))
       }
       //save changes made to activity
       activity.save(function(err){
