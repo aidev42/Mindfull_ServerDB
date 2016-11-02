@@ -43,7 +43,7 @@ app.post('/history', function (req, res, done) {
   .exec(function(err, activity){
     console.log('activity found: ', activity)
     if(err){ return done(err); }
-    if (!activity){
+    if (activity.ended == undefined){
       endTime = new Date()
     } else{
       endTime = activity.ended
