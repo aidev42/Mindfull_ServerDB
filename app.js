@@ -43,14 +43,16 @@ app.post('/history', function (req, res, done) {
   .exec(function(err, activity){
     console.log('activity found: ', activity)
     if(err){ return done(err); }
-    if (activity.ended == undefined){
-      endTime = new Date()
-    } else{
-      endTime = activity.ended
-      endTime.setDate(endTime.getDate()-7)
+    if (activity != null){
+      if (activity.ended == undefined){
+        endTime = new Date()
+      } else{
+        endTime = activity.ended
+        endTime.setDate(endTime.getDate()-7)
+      }
+      console.log('endTime is: ', endTime)
+    // })
     }
-    console.log('endTime is: ', endTime)
-  // })
 
   //Now find all activies started before the cutoff
   Activity.find({
