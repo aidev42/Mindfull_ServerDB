@@ -119,13 +119,14 @@ app.post('/', function (req, res, done) {
 app.options('/history', cors());
 app.delete('/history', function (req, res, done) {
   console.log('hit the delete')
-  Activity.remove({
+  Activity.find({
       '_id': req.body._id
     })
+  .remove()
   .exec(function(err, activity){
 
   if(err){ return done(err); }
-  res.send('done')
+  res.send(activity, 'done removing')
   })
 });
 
