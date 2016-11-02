@@ -68,12 +68,14 @@ app.post('/history', function (req, res, done) {
           })
         .sort({'ended': 'desc'})
         .exec(function(err, activities){
+          console.log('these work items were found: ', activities)
           if(err){ return done(err); }
           var sum = 0
           for (i=0; i < activities.length; i++){
             sum += activities[i].duration
           }
           dataReturn.push(Math.round(sum/60))
+          console.log('after work, this is datareturn', dataReturn)
         })
 
         Activity.find({
@@ -89,6 +91,7 @@ app.post('/history', function (req, res, done) {
             sum += activities[i].duration
           }
           dataReturn.push(Math.round(sum/60))
+          console.log('after social, this is datareturn', dataReturn)
         })
 
         Activity.find({
@@ -104,6 +107,7 @@ app.post('/history', function (req, res, done) {
             sum += activities[i].duration
           }
           dataReturn.push(Math.round(sum/60))
+          console.log('after self, this is datareturn', dataReturn)
         })
 
         Activity.find({
@@ -119,9 +123,9 @@ app.post('/history', function (req, res, done) {
             sum += activities[i].duration
           }
           dataReturn.push(Math.round(sum/60))
+          console.log('after rest, this is datareturn', dataReturn)
+          res.send(dataReturn);
         })
-
-        res.send(dataReturn);
 
       } else{
         Activity.find({
