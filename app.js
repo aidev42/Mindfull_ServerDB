@@ -126,6 +126,7 @@ app.delete('/history', function (req, res, done) {
 
   if(err){ return done(err); }
   res.send('done')
+  })
 });
 
 // listen
