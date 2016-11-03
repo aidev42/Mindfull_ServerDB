@@ -155,6 +155,35 @@ app.post('/history', function (req, res, done) {
     })
   });
 
+app.options('/edit', cors());
+app.put('/edit', function (req, res, done) {
+
+  //note that incoming start and end times will be in unix, so duration calc just /1000 not /1000*60, and then also recalc hours and minutes and update then SAVE
+
+
+  Activity.find({
+      '_id': req.body._id
+    })
+  .exec(function(err, activity){
+    console.log('found activity: ', activity)
+    if(err){ return done(err); }
+    else {
+      activity.started = req.body.started
+      activity.ended = req.body.ended
+      activity.duration = Math.round((activity.ended - activity.started) /1000 )
+        activity.hours = Math.floor(activity.duration / 60)
+        activity.minutes = activity.duration % 60
+
+        activity.save(function(err){
+          if(err) console.log('error saving activity' + err);
+          return done(err, activity);
+        });
+    }
+    console.log('this is the updated activity: ', activity)
+    res.send('done updating')
+  })
+});
+
 app.options('/', cors());
 app.post('/', function (req, res, done) {
   console.log('hit the post')
