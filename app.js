@@ -174,10 +174,10 @@ app.put('/edit', function (req, res, done) {
         activity.hours = Math.floor(activity.duration / 60)
         activity.minutes = activity.duration % 60
 
-        activity.save(function(err){
-          if(err) console.log('error saving activity' + err);
-          return done(err, activity);
-        });
+        // activity.save(function(err){
+        //   if(err) console.log('error saving activity' + err);
+        //   return done(err, activity);
+        // });
     }
     console.log('this is the updated activity: ', activity)
     res.send('done updating')
