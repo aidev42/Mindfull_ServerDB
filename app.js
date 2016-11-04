@@ -161,7 +161,7 @@ app.put('/edit', function (req, res, done) {
   //note that incoming start and end times will be in unix, so duration calc just /1000 not /1000*60, and then also recalc hours and minutes and update then SAVE
 
 
-  Activity.find({
+  Activity.findOne({
       '_id': req.body._id
     })
   .exec(function(err, activity){
